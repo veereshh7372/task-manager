@@ -2,10 +2,18 @@ import firebase_admin
 from firebase_admin import credentials, db
 from datetime import datetime
 import os
+import streamlit as st
 
 # Initialize Firebase
 if not firebase_admin._apps:
-    cred = credentials.Certificate('firebase_credentials.json')
+    # Try to get credentials from Streamlit Secrets first (for deployment)
+    try:
+        firebase_creds = st.secrets["firebase"]
+        cred = credentials.Certificate(dict(firebase_creds))
+    except:
+        # Fallback to local file (for local development)
+        cred = credentials.Certificate('firebase_credentials.json')
+    
     firebase_admin.initialize_app(cred, {
         'databaseURL': 'https://task-manager-1ed05-default-rtdb.firebaseio.com'
     })
